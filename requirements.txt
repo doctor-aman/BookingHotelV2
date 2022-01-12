@@ -1,0 +1,10 @@
+django==3.2.9
+psycopg2-binary
+djangorestframework
+django-filter
+python-decouple
+Pillow
+drf-yasg
+twilio
+
+
