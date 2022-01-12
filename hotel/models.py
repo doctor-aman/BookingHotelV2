@@ -2,17 +2,7 @@ from django.contrib.auth import get_user_model
 from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
-# статусы бронирования отеля
-class Status(models.Model):
-    STATUS = (
-        ('COMPLETED', "zavershen"),
-        ('DROPPED', "udalen"),
-    )
-    status = models.CharField(max_length=10, choices=STATUS, unique=True)
-
-    def __str__(self):
-        return self.status
-
+User = get_user_model()
 
 class Hotel(models.Model):
     name = models.CharField(max_length=50, unique=True)
@@ -25,29 +15,35 @@ class Hotel(models.Model):
             MaxValueValidator(5)
         ])
 
+
     def __str__(self):
         return self.name
-#
-#
-#
-# class Booking(models.Model):
-#     hotel_id = models.ForeignKey("Hotel", on_delete=models.CASCADE)
-#     user = models.ForeignKey(get_user_model(),
-#                              on_delete=models.CASCADE,
-#                              related_name='booking')
-#     time = models.DateField(auto_now_add=True)
-#     amount = models.FloatField(blank=True, null=True)
-#     status = models.ForeignKey("Status", on_delete=models.CASCADE)
-#     checkInDate = models.DateField(auto_now_add=True, blank=True, null=True)
-#     checkOutDate = models.DateField(auto_now_add=True, blank=True, null=True)
-#
-#     def __str__(self):
-#         return str(self.hotel_id)
-#
-#     class Meta:
-#         verbose_name = "Booking"
-#         verbose_name_plural = "Bookings"
-#
+
+# статусы бронирования отеля
+STATUS_CHOICES = (
+    ('OPEN', 'Открыт'),
+    ('BOOKED', 'забронирован')
+)
+
+
+class BookingModels(models.Model):
+    hotel_id = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='booking')
+    customer_name = models.ForeignKey(User, on_delete=models.CASCADE, related_name='booking')
+    customer_phonenumber = models.CharField(max_length=20, blank=True, null=True)
+    # customer_email = models.ForeignKey(Hotel, on_delete=models.RESTRICT)
+    time = models.DateField(auto_now_add=True)
+    amount = models.FloatField(blank=True, null=True)
+    status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=STATUS_CHOICES[1][1])
+    checkInDate = models.DateField(auto_now_add=True, blank=True, null=True)
+    checkOutDate = models.DateField(auto_now_add=True, blank=True, null=True)
+
+    def __str__(self):
+        return self.hotel_id.name
+
+    class Meta:
+        verbose_name = "Booking"
+
+
 #
 # class HotelFeature(models.Model):
 #     h_id = models.ForeignKey("Hotel", on_delete=models.CASCADE)
