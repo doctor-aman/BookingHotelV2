@@ -4,6 +4,7 @@ from django.db import models
 
 User = get_user_model()
 
+# Модель отеля
 class Hotel(models.Model):
     name = models.CharField(max_length=50, unique=True)
     location = models.TextField(blank=True, null=True)
@@ -25,7 +26,7 @@ STATUS_CHOICES = (
     ('BOOKED', 'забронирован')
 )
 
-
+# Модель бронирование отеля
 class BookingModels(models.Model):
     hotel_id = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='booking')
     customer_name = models.ForeignKey(User, on_delete=models.CASCADE, related_name='booking')
@@ -43,26 +44,18 @@ class BookingModels(models.Model):
     class Meta:
         verbose_name = "Booking"
 
+# Модель комментариев
 
-#
-# class HotelFeature(models.Model):
-#     h_id = models.ForeignKey("Hotel", on_delete=models.CASCADE)
-#     f_id = models.ForeignKey("Feature", on_delete=models.CASCADE)
-#
-#     def __str__(self):
-#         return str(self.f_id)
-#
-#     class Meta:
-#         verbose_name = "HotelFeature"
-#         verbose_name_plural = "HotelFeatures"
-#
-# class Search(models.Model):
-#     user = models.ForeignKey(get_user_model(), on_delete=models.CASCADE, related_name='search')
-#     location = models.CharField(max_length=50)
-#     checkInDate = models.DateField(blank=True, null=True)
-#     checkOutDate = models.DateField(blank=True, null=True)
-#     amount = models.FloatField(blank=True, null=True)
-#
-#     def __str__(self):
-#         return str(self.user)
-#
+class Comment(models.Model):
+    hotel = models.ForeignKey(Hotel,
+                                on_delete=models.CASCADE,
+                                related_name='comments')
+    author = models.ForeignKey(User,
+                               on_delete=models.CASCADE,
+                               related_name='comments')
+    text = models.TextField()
+    created_at = models.DateTimeField(auto_now_add=True)
+
+    def __str__(self):
+        return self.author
+

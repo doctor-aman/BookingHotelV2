@@ -1,11 +1,10 @@
-
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.decorators import action
 from rest_framework.filters import SearchFilter, OrderingFilter
 from rest_framework.viewsets import ModelViewSet
 
-from hotel.models import Hotel, BookingModels
-from hotel.serializers import HotelSerializer, BookingSerializer
+from hotel.models import Hotel, BookingModels, Comment
+from hotel.serializers import HotelSerializer, BookingSerializer, CommentSerializer
 
 
 class HotelView(ModelViewSet):
@@ -16,7 +15,6 @@ class HotelView(ModelViewSet):
     ordering_fields = ['name', 'cost', 'location']
 
 
-
 class BookingView(ModelViewSet):
     queryset = BookingModels.objects.all()
     serializer_class = BookingSerializer
@@ -25,9 +23,11 @@ class BookingView(ModelViewSet):
     ordering_fields = ['customer_name']
 
 
-# @action(['GET'], detail=True)
-# def comments(self, request, pk):
-#     booking = self.get_object()
-#     comments = booking.comments.all()  # queryset сделали
-#     serializer = CommentSerializer(comments, many=True)
-#     return Response(serializer.data)
+class CommentView(ModelViewSet):
+    queryset = Comment.objects.all()
+    serializer_class = CommentSerializer
+    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
+    search_fields = ['author']
+    ordering_fields = ['created_at']
+
+
