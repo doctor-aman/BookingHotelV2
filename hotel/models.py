@@ -1,4 +1,5 @@
 from django.contrib.auth import get_user_model
+from django.core.validators import MinValueValidator, MaxValueValidator
 from django.db import models
 
 # статусы бронирования отеля
@@ -18,6 +19,11 @@ class Hotel(models.Model):
     location = models.TextField(blank=True, null=True)
     visitorCount = models.IntegerField(blank=True, null=True, default=0)
     cost = models.FloatField(blank=True, null=True)
+    rating = models.SmallIntegerField(
+        validators=[
+            MinValueValidator(1),
+            MaxValueValidator(5)
+        ])
 
     def __str__(self):
         return self.name
