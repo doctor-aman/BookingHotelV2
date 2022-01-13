@@ -12,8 +12,9 @@ class Rating(models.Model):
     hotel = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name="ratings")
 
     def __str__(self):
-        return f"{self.star} - {self.hotel}"
+        return f"{self.star}"
 
     class Meta:
         verbose_name = "Рейтинг"
         verbose_name_plural = "Рейтинги"
+        # unique_together = ['hotel', 'user']

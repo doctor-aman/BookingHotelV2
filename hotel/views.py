@@ -1,8 +1,11 @@
 from django_filters.rest_framework import DjangoFilterBackend
 from rest_framework.filters import SearchFilter, OrderingFilter
-from rest_framework.viewsets import ModelViewSet
+from rest_framework.mixins import CreateModelMixin, UpdateModelMixin, DestroyModelMixin
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from django.shortcuts import get_object_or_404
 from hotel.models import Hotel, BookingModels, Comment
+from hotel.permission import IsAuthor
 from hotel.serializers import HotelSerializer, BookingSerializer, CommentSerializer
 
 
@@ -24,6 +27,16 @@ class HotelView(ModelViewSet):
         data['is_liked'] = liked
         return data
 
+    def get_permissions(self):
+        # создавать может пост авторизованный пользователь
+        if self.action in ['create', 'add_to_favorites', 'remove_from_favorites']:
+            return [IsAuthenticated()]
+        # изменять и удалять модет только автор поста
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            return [IsAuthor()]
+        # просмотр поста доступен всем
+        return []
+
 
 class BookingView(ModelViewSet):
     queryset = BookingModels.objects.all()
@@ -32,12 +45,29 @@ class BookingView(ModelViewSet):
     search_fields = ['customer_name', 'status', 'checkOutDate']
     ordering_fields = ['customer_name']
 
+    def get_permissions(self):
+        # создавать может пост авторизованный пользователь
+        if self.action in ['create', 'add_to_favorites', 'remove_from_favorites']:
+            return [IsAuthenticated()]
+        # изменять и удалять модет только автор поста
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            return [IsAuthor()]
+        # просмотр поста доступен всем
+        return []
 
-class CommentView(ModelViewSet):
+
+class CommentView(CreateModelMixin,
+                     UpdateModelMixin,
+                     DestroyModelMixin,
+                     GenericViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
-    filter_backends = [SearchFilter, OrderingFilter, DjangoFilterBackend]
-    search_fields = ['author']
-    ordering_fields = ['created_at']
 
+    def get_permissions(self):
+        # создавать может пост авторизованный пользователь
+        if self.action == 'create':
+            return [IsAuthenticated()]
+        # изменять и удалять может только автор поста
+        elif self.action in ['update', 'partial_update', 'destroy']:
+            return [IsAuthor()]
 
