@@ -45,7 +45,8 @@ INSTALLED_APPS = [
 
     'account',
     'hotel',
-    'rating'
+    'rating',
+    'Favorite',
 
 ]
 

@@ -6,7 +6,7 @@ from rating.models import Rating
 class RatingSerializer(serializers.ModelSerializer):
     class Meta:
         model = Rating
-        exclude = ['user']
+        exclude = ['user']   #исключаем user
 
     def validate(self, attrs):
         user = self.context.get('request').user
