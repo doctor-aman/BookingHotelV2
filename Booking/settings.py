@@ -44,7 +44,8 @@ INSTALLED_APPS = [
     'drf_yasg',
 
     'account',
-    'hotel'
+    'hotel',
+    'rating'
 
 ]
 
