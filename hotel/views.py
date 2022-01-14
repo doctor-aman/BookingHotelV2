@@ -8,6 +8,7 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from django.shortcuts import get_object_or_404
 
 from Favorite.models import Favorites
+from Favorite.serializers import FavoriteSerializer
 from hotel.models import Hotel, BookingModels, Comment
 from hotel.permission import IsAuthor
 from hotel.serializers import HotelSerializer, BookingSerializer, CommentSerializer
@@ -41,6 +42,12 @@ class HotelView(ModelViewSet):
         # просмотр поста доступен всем
         return []
 
+    def get_serializer_class(self):
+        serializer_class = super().get_serializer_class()
+        if self.action == 'list':
+            serializer_class = HotelSerializer
+        return serializer_class
+
     @action(['POST'], detail=True)
     def add_to_favorites(self, request, pk=None):
         hotel = self.get_object()
@@ -63,8 +70,19 @@ class HotelView(ModelViewSet):
                     return Response('Удален из избранных')
         return Response('Невозможно удалить, так как нет в избранных')
 
+    @action(['GET'], detail=False)
+    def favoritlist(self, request):
+        res = []
+        data = request.user.liked.all()
+        for hot in data:
+            res.append(hot.hotel)
+        serializer = HotelSerializer(res, many=True)
+        return Response(serializer.data)
 
 
+#TODO:Лайки
+#TODO:Работа с картинками
+#TODO:Подключить Celery
 
 class BookingView(ModelViewSet):
     queryset = BookingModels.objects.all()
