@@ -16,9 +16,13 @@ class Hotel(models.Model):
             MaxValueValidator(5)
         ])
 
-
     def __str__(self):
         return self.name
+
+
+class HotelImage(models.Model):
+    hotel_image = models.ForeignKey(Hotel, on_delete=models.CASCADE, related_name='pics')
+    image = models.ImageField(upload_to='hotels')
 
 # статусы бронирования отеля
 STATUS_CHOICES = (
@@ -57,4 +61,7 @@ class Comment(models.Model):
     created_at = models.DateTimeField(auto_now_add=True)
 
     def __str__(self):
-        return self.author
+        return self.author.name
+
+
+
