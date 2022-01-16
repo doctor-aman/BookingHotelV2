@@ -8,10 +8,10 @@ from rest_framework.viewsets import ModelViewSet, GenericViewSet
 from django.shortcuts import get_object_or_404
 
 from Favorite.models import Favorites
-from Favorite.serializers import FavoriteSerializer
+from hotel import services
 from hotel.models import Hotel, BookingModels, Comment
 from hotel.permission import IsAuthor
-from hotel.serializers import HotelSerializer, BookingSerializer, CommentSerializer
+from hotel.serializers import HotelSerializer, BookingSerializer, CommentSerializer, FanSerializer
 
 
 class HotelView(ModelViewSet):
@@ -79,9 +79,37 @@ class HotelView(ModelViewSet):
         serializer = HotelSerializer(res, many=True)
         return Response(serializer.data)
 
+    @action(detail=True, methods=['POST'])
+    def like(self, request, pk=None):
+        """Лайкает `obj`.
+        """
+        obj = self.get_object()
+        services.add_like(obj, request.user)
+
+        return Response()
+
+    @action(detail=True, methods=['POST'])
+    def unlike(self, request, pk=None):
+        """Удаляет лайк с `obj`.
+        """
+        obj = self.get_object()
+        services.remove_like(obj, request.user)
+        return Response()
+
+    @action(detail=True, methods=['GET'])
+    def fans(self, request, pk=None):
+        """Получает всех пользователей, которые лайкнули `obj`.
+        """
+        obj = self.get_object()
+        fans = services.get_fans(obj)
+        serializer = FanSerializer(fans, many=True)
+        return Response(serializer.data)
+
+
+
 
 #TODO:Лайки
-#TODO:Работа с картинками
+
 #TODO:Подключить Celery
 
 class BookingView(ModelViewSet):
@@ -116,4 +144,5 @@ class CommentView(CreateModelMixin,
         # изменять и удалять может только автор поста
         elif self.action in ['update', 'partial_update', 'destroy']:
             return [IsAuthor()]
+
 

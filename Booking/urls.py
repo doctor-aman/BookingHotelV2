@@ -37,4 +37,5 @@ urlpatterns = [
     path('api/v1/', include('rating.urls')),
     path('api/v1/', include('Favorite.urls')),
 
+
 ]
