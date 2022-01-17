@@ -12,6 +12,9 @@ https://docs.djangoproject.com/en/4.0/ref/settings/
 import os
 from pathlib import Path
 
+# Celery settings
+
+
 # Build paths inside the project like this: BASE_DIR / 'subdir'.
 from decouple import config
 
@@ -48,6 +51,8 @@ INSTALLED_APPS = [
     'rating',
     'Favorite',
 
+    'django_celery_results',
+
 
 
 ]
@@ -67,7 +72,7 @@ ROOT_URLCONF = 'Booking.urls'
 TEMPLATES = [
     {
         'BACKEND': 'django.template.backends.django.DjangoTemplates',
-        'DIRS': [],
+        'DIRS': [os.path.join(BASE_DIR, "template")],
         'APP_DIRS': True,
         'OPTIONS': {
             'context_processors': [
@@ -149,3 +154,11 @@ REST_FRAMEWORK = {
         'rest_framework.authentication.TokenAuthentication',
     ]
 }
+REDIS_HOST = "0.0.0.0"
+REDIS_PORT = "6379"
+CELERY_BROKER_URL = "redis://"+REDIS_HOST + ":" +REDIS_PORT+"/0"
+CELERY_BROKER_TRANSPORT_OPTIONS = {'visibility_timeout': 3600}
+CELERY_RESULT_BACKEND = "redis://"+REDIS_HOST + ":" +REDIS_PORT+"/0"
+CELERY_ACCEPT_CONTENT = ["application/json"]
+CELERY_TASK_SERIALIZER = 'json'
+CELERY_RESULT_SERIALIZER = "json"

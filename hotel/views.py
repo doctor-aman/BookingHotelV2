@@ -108,9 +108,10 @@ class HotelView(ModelViewSet):
 
 
 
-#TODO:Лайки
+#TODO:Лайки не доделан
+#TODO:в постман не редактирует отель, смена пароля через постман
 
-#TODO:Подключить Celery
+#TODO:не работает смена пароля
 
 class BookingView(ModelViewSet):
     queryset = BookingModels.objects.all()

@@ -102,5 +102,3 @@ class FanSerializer(serializers.ModelSerializer):
             'full_name'
 
         )
-    def get_full_name(self, obj):
-        return obj.get_full_name()

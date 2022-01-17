@@ -1,6 +1,5 @@
 from django.contrib.auth import get_user_model, authenticate
 from django.core.mail import send_mail
-from django.utils.crypto import get_random_string
 from rest_framework import serializers
 
 User = get_user_model()
@@ -27,8 +26,7 @@ class RegisterSerializer(serializers.Serializer):
     def create(self):
         attrs = self.validated_data
         user = User.objects.create_user(**attrs)
-        code = user.generate_activation_code()
-        user.send_activation_mail(user.email, code)
+
         return user
 
 
@@ -90,10 +88,10 @@ class ChangePasswordSerializer(serializers.Serializer):
     password = serializers.CharField(required=True, min_length=6)
     password_confirm = serializers.CharField(required=True, min_length=6)
 
-    def validate_old_pass(self, old_pass):
-        user = self.context.get('request').user
-        if not user.chek_password(old_pass):
-            raise serializers.ValidationError('Неверный пароль')
+    def validate_old_password(self, old_pass):
+        if not self.context['user'].check_password(old_pass):  # got data
+            raise serializers.ValidationError("Неверный пароль")
+
         return old_pass
 
     def validate(self, attrs):
@@ -108,6 +106,7 @@ class ChangePasswordSerializer(serializers.Serializer):
         password = self.validated_data.get('password')
         user.set_password(password)
         user.save()
+
 
 class ForgotPasswordSerializer(serializers.Serializer):
     email = serializers.EmailField()

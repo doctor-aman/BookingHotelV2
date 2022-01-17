@@ -11,6 +11,7 @@ class UserManager(BaseUserManager):
         user = self.model(email=email, **extra_fields)
         user.set_password(password)
         user.save()
+        print(dir(user))
         return user
 
     def create_user(self, email, password, **extra_fields):
@@ -53,10 +54,10 @@ class User(AbstractBaseUser):
         self.save()
         return code
 
-    @staticmethod
-    def send_activation_mail(email, code):
-        message = f'Ваш код активации: {code}'
-        send_mail('Активация аккаунта',
-                  message,
-                  'test@gmail.com',
-                  [email])
+    def check_token(self, token):
+        if self.activation_code == token:
+            return True
+        return False
+
+
+
