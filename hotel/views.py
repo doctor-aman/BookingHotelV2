@@ -9,7 +9,7 @@ from django.shortcuts import get_object_or_404
 
 from Favorite.models import Favorites
 from hotel import services
-from hotel.models import Hotel, BookingModels, Comment
+from hotel.models import Hotel, BookingModels, Comment, Like
 from hotel.permission import IsAuthor
 from hotel.serializers import HotelSerializer, BookingSerializer, CommentSerializer, FanSerializer
 
@@ -79,7 +79,7 @@ class HotelView(ModelViewSet):
         serializer = HotelSerializer(res, many=True)
         return Response(serializer.data)
 
-    @action(detail=True, methods=['POST'])
+    @action(['POST'], detail=True)
     def like(self, request, pk=None):
         """Лайкает `obj`.
         """
@@ -88,7 +88,7 @@ class HotelView(ModelViewSet):
 
         return Response()
 
-    @action(detail=True, methods=['POST'])
+    @action(['POST'], detail=True)
     def unlike(self, request, pk=None):
         """Удаляет лайк с `obj`.
         """
@@ -96,7 +96,7 @@ class HotelView(ModelViewSet):
         services.remove_like(obj, request.user)
         return Response()
 
-    @action(detail=True, methods=['GET'])
+    @action(['GET'], detail=False)
     def fans(self, request, pk=None):
         """Получает всех пользователей, которые лайкнули `obj`.
         """
@@ -145,5 +145,4 @@ class CommentView(CreateModelMixin,
         # изменять и удалять может только автор поста
         elif self.action in ['update', 'partial_update', 'destroy']:
             return [IsAuthor()]
-
 

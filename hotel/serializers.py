@@ -3,17 +3,18 @@ from rest_framework import serializers
 
 from hotel.models import Hotel, BookingModels, Comment, HotelImage
 from rating.serializers import RatingSerializer
-from hotel import services as hotel_services
 
 User = get_user_model()
 
+
 class HotelSerializer(serializers.ModelSerializer):
     image = serializers.SerializerMethodField()
-    is_fan = serializers.SerializerMethodField()
+
+    # is_fan = serializers.SerializerMethodField()
 
     class Meta:
         model = Hotel
-        fields = ('id', 'name', 'location', 'visitorCount', 'cost', 'stars', 'image', 'is_fan', 'total_likes')
+        fields = ('id', 'name', 'location', 'visitorCount', 'cost', 'stars', 'image', 'total_likes')
 
     def to_representation(self, instance):
         representation = super().to_representation(instance)
@@ -30,11 +31,11 @@ class HotelSerializer(serializers.ModelSerializer):
             return first_image.image.url  # если image есть вернет URL
         return ''  # если image то вернет пустую строку
 
-    def get_is_fan(self, obj) -> bool:
-        """Check if a `request.user` has liked this tweet (`obj`).
-        """
-        user = self.context.get('request').user
-        return hotel_services.is_fan(obj, user)
+    # def get_is_fan(self, obj) -> bool:
+    #     """Check if a `request.user` has liked this tweet (`obj`).
+    #     """
+    #     user = self.context.get('request').user
+    #     return hotel_services.is_fan(obj, user)
 
 
 class HotelImageSerializer(serializers.ModelSerializer):
@@ -95,10 +96,8 @@ class CommentSerializer(serializers.ModelSerializer):
 
 class FanSerializer(serializers.ModelSerializer):
     full_name = serializers.SerializerMethodField()
+
     class Meta:
         model = User
-        fields = (
-            'name',
-            'full_name'
-
-        )
+        fields = ('name',
+                  'full_name')
