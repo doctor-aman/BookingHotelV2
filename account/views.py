@@ -21,7 +21,7 @@ class RegistrationView(APIView):
         serializer = RegisterSerializer(data=data)
         if serializer.is_valid(raise_exception=True):
             user = serializer.create()
-            print(user.pk)
+            # print(user.pk)
             message = f'Вы успешно зарегистрированы. ' \
                       f'Вам отправлено письмо с активацией'
             current_site = get_current_site(request)
@@ -83,6 +83,7 @@ class ForgotPasswordView(APIView):
         serializer.is_valid(raise_exception=True)
         serializer.send_code()
         return  Response('Вам отправлено письмо для восстановления пароля')
+
 
 class ForgotPasswordComlete(APIView):
     def post(self, request):

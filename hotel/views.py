@@ -32,15 +32,15 @@ class HotelView(ModelViewSet):
         data['is_liked'] = liked
         return data
 
-    def get_permissions(self):
-        # создавать может пост авторизованный пользователь
-        if self.action in ['create', 'add_to_favorites', 'remove_from_favorites']:
-            return [IsAuthenticated()]
-        # изменять и удалять модет только автор поста
-        elif self.action in ['update', 'partial_update', 'destroy']:
-            return [IsAuthor()]
-        # просмотр поста доступен всем
-        return []
+    # def get_permissions(self):
+    #     # создавать может пост авторизованный пользователь
+    #     if self.action in ['create', 'add_to_favorites', 'remove_from_favorites']:
+    #         return [IsAuthenticated()]
+    #     # изменять и удалять модет только автор поста
+    #     elif self.action in ['update', 'partial_update', 'destroy']:
+    #         return [IsAuthor()]
+    #     # просмотр поста доступен всем
+    #     return []
 
     def get_serializer_class(self):
         serializer_class = super().get_serializer_class()
@@ -85,7 +85,6 @@ class HotelView(ModelViewSet):
         """
         obj = self.get_object()
         services.add_like(obj, request.user)
-
         return Response()
 
     @action(['POST'], detail=True)
@@ -96,22 +95,15 @@ class HotelView(ModelViewSet):
         services.remove_like(obj, request.user)
         return Response()
 
-    @action(['GET'], detail=False)
-    def fans(self, request, pk=None):
-        """Получает всех пользователей, которые лайкнули `obj`.
-        """
-        obj = self.get_object()
-        fans = services.get_fans(obj)
-        serializer = FanSerializer(fans, many=True)
-        return Response(serializer.data)
+    # @action(['GET'], detail=False)
+    # def fans(self, request, pk=None):
+    #     """Получает всех пользователей, которые лайкнули `obj`.
+    #     """
+    #     obj = self.get_object()
+    #     fans = services.get_fans(obj)
+    #     serializer = FanSerializer(fans, many=True)
+    #     return Response(serializer.data)
 
-
-
-
-#TODO:Лайки не доделан
-#TODO:в постман не редактирует отель, смена пароля через постман
-
-#TODO:не работает смена пароля
 
 class BookingView(ModelViewSet):
     queryset = BookingModels.objects.all()
@@ -120,21 +112,11 @@ class BookingView(ModelViewSet):
     search_fields = ['customer_name', 'status', 'checkOutDate']
     ordering_fields = ['customer_name']
 
-    def get_permissions(self):
-        # создавать может пост авторизованный пользователь
-        if self.action in ['create', 'add_to_favorites', 'remove_from_favorites']:
-            return [IsAuthenticated()]
-        # изменять и удалять модет только автор поста
-        elif self.action in ['update', 'partial_update', 'destroy']:
-            return [IsAuthor()]
-        # просмотр поста доступен всем
-        return []
-
 
 class CommentView(CreateModelMixin,
-                     UpdateModelMixin,
-                     DestroyModelMixin,
-                     GenericViewSet):
+                  UpdateModelMixin,
+                  DestroyModelMixin,
+                  GenericViewSet):
     queryset = Comment.objects.all()
     serializer_class = CommentSerializer
 
@@ -145,4 +127,3 @@ class CommentView(CreateModelMixin,
         # изменять и удалять может только автор поста
         elif self.action in ['update', 'partial_update', 'destroy']:
             return [IsAuthor()]
-
